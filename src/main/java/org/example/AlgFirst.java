@@ -3,6 +3,8 @@ package org.example;
 import java.util.*;
 
 public class AlgFirst {
+
+    static boolean output = false;
     static boolean result = false;
     static Queue<Node> queueInit = new LinkedList<>();
     static Set<char[][]> setInit = new HashSet<>();
@@ -64,6 +66,8 @@ public class AlgFirst {
 
     public static void optionsState(Node node){
 
+        System.out.println("Раскрытие:");
+
         if (node.col > 0 && !result)
             addNode(node, node.row, node.col - 1);
 
@@ -88,6 +92,9 @@ public class AlgFirst {
         if(!searchMatches(state)){
             Node newNode = create(parent, state, row, col);
 
+            if(output)
+                newNode.printNode();
+
             setInit.add(state);
             queueInit.add(newNode);
         }
@@ -97,6 +104,34 @@ public class AlgFirst {
         queueInit.add(nodeInit);
         setInit.add(nodeInit.state);
 
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Выберите режим\n1 - автомат\n2 - пошаговый\n");
+        int choise = scanner.nextInt();
+
+        switch (choise){
+            case 1:
+                while(nodeInit != null && !result) {
+                    nodeInit = queueInit.poll();
+                    optionsState(nodeInit);
+                    count++;
+                }
+                break;
+            case 2:
+                output = true;
+                while(nodeInit != null && !result) {
+                    nodeInit = queueInit.poll();
+                    System.out.println("Раскрывается узел:");
+                    nodeInit.printNode();
+
+                    optionsState(nodeInit);
+                    System.out.println("Введите какой-нибудь символ");
+                    scanner.nextLine();
+                    count++;
+                }
+                break;
+            default:
+                break;
+        }
         while(nodeInit != null && !result) {
             nodeInit = queueInit.poll();
             optionsState(nodeInit);

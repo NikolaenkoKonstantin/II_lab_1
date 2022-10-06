@@ -3,6 +3,8 @@ package org.example;
 import java.util.*;
 
 public class AlgSecond {
+
+    static boolean output = false;
     static boolean result = false;
     static Queue<Node> queueInit = new LinkedList<>();
     static Queue<Node> queueFinal = new LinkedList<>();
@@ -98,8 +100,11 @@ public class AlgSecond {
         }
 
         if (!searchMatches(state, setInit)){
+            Node node = addNode(parent, row, col, state);
             setInit.add(state);
-            queueInit.add(addNode(parent, row, col, state));
+            queueInit.add(node);
+            if(output)
+                node.printNode();
         }
     }
 
@@ -114,12 +119,17 @@ public class AlgSecond {
         }
 
         if (!searchMatches(state, setFinal)){
+            Node node = addNode(parent, row, col, state);
             setFinal.add(state);
-            queueFinal.add(addNode(parent, row, col, state));
+            queueFinal.add(node);
+            if(output)
+                node.printNode();
         }
     }
 
     public static void optionsStateFinal(){
+
+        System.out.println("Раскрытие по final");
 
         if (nodeFinal.col > 0 && !result)
             addFinalNode(nodeFinal, nodeFinal.row, nodeFinal.col - 1);
@@ -136,6 +146,8 @@ public class AlgSecond {
 
 
     public static void optionsStateInit(){
+
+        System.out.println("Раскрытие по init");
 
         if (nodeInit.col > 0 && !result)
             addInitNode(nodeInit, nodeInit.row, nodeInit.col - 1);
@@ -154,7 +166,18 @@ public class AlgSecond {
         nodeInit = queueInit.poll();
         nodeFinal = queueFinal.poll();
 
+        if(output) {
+            System.out.println("Раскрывается узел init");
+            nodeInit.printNode();
+        }
+
         optionsStateInit();
+
+        if(output) {
+            System.out.println("Раскрывается узел final");
+            nodeFinal.printNode();
+        }
+
         optionsStateFinal();
         count++;
     }
@@ -167,8 +190,26 @@ public class AlgSecond {
         queueFinal.add(nodeFinal);
         setFinal.add(nodeFinal.state);
 
-        while(!queueInit.isEmpty() && !queueFinal.isEmpty() && !result){
-            algBidirectional();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Выберите режим\n1 - автомат\n2 - пошаговый\n");
+        int choise = scanner.nextInt();
+
+        switch (choise) {
+            case 1:
+                while (!queueInit.isEmpty() && !queueFinal.isEmpty() && !result) {
+                    algBidirectional();
+                }
+                break;
+            case 2:
+                output = true;
+                while (!queueInit.isEmpty() && !queueFinal.isEmpty() && !result) {
+                    algBidirectional();
+                    System.out.println("Введите какой-нибудь символ");
+                    scanner.nextLine();
+                }
+                break;
+            default:
+                break;
         }
     }
 
